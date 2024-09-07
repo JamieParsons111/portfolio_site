@@ -53,18 +53,16 @@
 
   
 <div class="container-fluid mt-3">
-
-
-
   <h3>JP's Snake Game</h3>
   <p> Press buttons below to begin moving the cube</p>
   <div id="gameContainer"></div>
 </div>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <style>
 canvas {
-    border:1px solid #d3d3d3;
-    background-color: #f1f1f1;
+    border:5px solid #000000;
+    background-color: #ffffff;
 }
 </style>
 </head>
@@ -76,8 +74,10 @@ var myGamePiece;
 // Spawns the objects and canvas
 function startGame() {
     myGameArea.start();
-    myGamePiece = new component(30, 30, "red", 10, 120);
-    myGamePiece2 =  new component (30, 30, "red", 10, 90);
+    snake = new component(30, 30, "red", 250, 150);
+    food =  new component (30, 30, "blue", 50, 90);
+    snake.speedX = 0;
+    snake.speedY = 0;
 }
 
 // Creates the canvas 
@@ -88,7 +88,13 @@ var myGameArea = {
         this.canvas.height = 400;
         this.context = this.canvas.getContext("2d");
         document.getElementById("gameContainer").appendChild(this.canvas); // Append to the game container
-        this.interval = setInterval(updateGameArea, 20);
+        this.interval = setInterval(updateGameArea, 10);
+        window.addEventListener('keydown', function (e) {
+      myGameArea.key = e.keyCode;
+      })
+      window.addEventListener('keyup', function (e) {
+        myGameArea.key = true;
+      })
     },
     clear : function() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -113,42 +119,34 @@ function component(width, height, color, x, y) {
     this.x += this.speedX;
     this.y += this.speedY;
   }
+  
 }
 
 function updateGameArea() {
   myGameArea.clear();
-  myGamePiece.newPos();
+  
+  if (myGameArea.key && myGameArea.key == 37) {snake.speedX = -1; snake.speedY = 0; }
+  if (myGameArea.key && myGameArea.key == 39) {snake.speedX = 1; snake.speedY = 0;}
+  if (myGameArea.key && myGameArea.key == 38) {snake.speedY = -1; snake.speedX = 0; }
+  if (myGameArea.key && myGameArea.key == 40) {snake.speedY = 1; snake.speedX = 0;  }
 
-  myGamePiece.update();
+  snake.newPos();
+
+  food.newPos();
+  food.update();
+
+ // Boundary check
+ if (snake.x < 0 || snake.x >= myGameArea.width || snake.y < 0 || snake.y >= myGameArea.height) {
+    console.log("Snake hit the wall! Game over.");
+    startGame();
+    return; // Stop the game loop or handle game over
+  }
+
+  snake.update();
+
 }
-
-function moveup() {
-  myGamePiece.speedY -= 1;
-}
-
-function movedown() {
-  myGamePiece.speedY += 1;
-}
-
-function moveleft() {
-  myGamePiece.speedX -= 1;
-}
-
-function moveright() {
-  myGamePiece.speedX += 1;
-}
-
-function stopMove() {
-  myGamePiece.speedX = 0;
-  myGamePiece.speedY = 0;
-}
-
 </script>    
 
-<button onmousedown="moveup()" onmouseup="stopMove()" ontouchstart="moveup()">UP</button>
-<button onmousedown="movedown()" onmouseup="stopMove()" ontouchstart="movedown()">DOWN</button>
-<button onmousedown="moveleft()" onmouseup="stopMove()" ontouchstart="moveleft()">LEFT</button>
-<button onmousedown="moveright()" onmouseup="stopMove()" ontouchstart="moveright()">RIGHT</button>
 
 </body>
 </html>
