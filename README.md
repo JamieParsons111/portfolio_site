@@ -1,4 +1,4 @@
-Portfolio site designed using Express.js. Languages include javascript and html.
+Portfolio site designed using React JS. Languages include javascript and html.
 
 Designed to showcase my skills and various other projects, this site by the end will have these features:
 
